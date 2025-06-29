@@ -221,11 +221,11 @@
                     <div id="suggestionsLoadingAnimation" class="ml-3 hidden stock-line-animation">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <polyline points="2 18, 8 12, 16 16, 22 8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </div>
-                </button>
-            </div>
-            <div id="suggestionResults" class="mt-4 text-gray-800 prose prose-lg max-w-none">
+                            </svg>
+                        </div>
+                    </button>
+                </div>
+                <div id="suggestionResults" class="mt-4 text-gray-800 prose prose-lg max-w-none">
                 <p class="text-gray-600">點擊上方按鈕，AI 將根據您目前的輸入，建議可補充的資料類型。</p>
             </div>
         </div>
@@ -600,7 +600,7 @@
                     <ul>
                         <li><strong>先驅者 (Pioneers)</strong>：這些公司創造了新技術，例如晶片製造商和基礎模型開發商。</li>
                         <li><strong>推動者 (Enablers)</strong>：這些公司提供了技術得以運行的基礎設施，例如雲端服務提供商和數據中心。</li>
-                        <li><strong>適應者 (Adaptors)</strong>：這些公司在非科技行業中採用新技術來改進其業務模式。</li>
+                        <li><strong>適應者 (Adaptors)經</strong>：這些公司在非科技行業中採用新技術來改進其業務模式。</li>
                         <li><strong>改革者 (Reformers)</strong>：這些公司利用新技術從根本上改變行業，創造新的商業模式和市場。</li>
                         <li><strong>落後者 (Laggards)</strong>：這些公司未能適應新技術，可能面臨衰退或被淘汰的風險。</li>
                     </ul>
@@ -903,6 +903,7 @@
             const stockDescription = document.getElementById('stockDescription').value;
             const optionDescription = document.getElementById('optionDescription').value;
             const generalInfo = document.getElementById('generalInfo').value;
+            const sentimentResults = document.getElementById('sentimentResults').innerText; // 獲取情緒分析結果文本
             const suggestionResultsDiv = document.getElementById('suggestionResults');
             const getSuggestionsButton = document.getElementById('getSuggestionsButton');
             const suggestionsButtonText = document.getElementById('suggestionsButtonText');
@@ -922,7 +923,9 @@
                 if (optionDescription.trim()) currentInputs.push("期權相關資訊描述");
                 if (generalInfo.trim()) currentInputs.push("其他通用資訊");
                 if (base64Images.length > 0) currentInputs.push("上傳的圖表");
-                if (document.getElementById('sentimentText').value.trim()) currentInputs.push("市場情緒分析文本");
+                if (document.getElementById('sentimentText').value.trim() && document.getElementById('sentimentText').value.trim() !== '此處將顯示情緒分析結果。') { // Ensure actual sentiment text is present
+                    currentInputs.push("市場情緒分析文本");
+                }
 
 
                 let prompt = "根據用戶當前已提供的以下信息，請建議還可以補充哪些類型的數據或信息，以便對股票和期權進行更全面、深入的分析。請具體說明為什麼這些數據會有所幫助，並以Markdown列表形式列出建議。\n\n";
@@ -933,6 +936,7 @@
                 }
                 prompt += "建議：\n";
 
+                console.log("Suggestions Prompt:", prompt); // Log the prompt
 
                 const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                 const payload = { contents: chatHistory };
@@ -945,7 +949,10 @@
                     body: JSON.stringify(payload)
                 });
 
+                console.log("Suggestions API Raw Response:", response); // Log raw response
+
                 const result = await response.json();
+                console.log("Suggestions API Parsed Result:", result); // Log parsed JSON result
 
                 if (result.candidates && result.candidates.length > 0 &&
                     result.candidates[0].content && result.candidates[0].content.parts &&
@@ -953,7 +960,12 @@
                     const text = result.candidates[0].content.parts[0].text;
                     suggestionResultsDiv.innerHTML = marked.parse(text);
                 } else {
-                    suggestionResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">獲取建議失敗：未從AI獲取到有效回應。</p>';
+                    // Check for specific error messages from the API
+                    if (result.error && result.error.message) {
+                        suggestionResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">獲取建議失敗：AI回應錯誤 - ${result.error.message}</p>`;
+                    } else {
+                        suggestionResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">獲取建議失敗：未從AI獲取到有效回應。</p>';
+                    }
                 }
             } catch (error) {
                 console.error('獲取建議失敗:', error);
@@ -1028,7 +1040,11 @@
                     const text = result.candidates[0].content.parts[0].text;
                     followUpResultsDiv.innerHTML = marked.parse(text);
                 } else {
-                    followUpResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">提問失敗：未從AI獲取到有效回應。</p>';
+                    if (result.error && result.error.message) {
+                        followUpResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">提問失敗：AI回應錯誤 - ${result.error.message}</p>`;
+                    } else {
+                        followUpResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">提問失敗：未從AI獲取到有效回應。</p>';
+                    }
                 }
             } catch (error) {
                 console.error('後續提問失敗:', error);
