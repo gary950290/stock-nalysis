@@ -246,6 +246,29 @@
             </div>
         </div>
 
+        <!-- 提問區塊 -->
+        <div class="card p-6 sm:p-8">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6">對分析結果提問 (進一步分析)</h2>
+            <div class="mb-6">
+                <label for="followUpQuestionText" class="block text-gray-700 text-lg font-medium mb-3">您的問題</label>
+                <textarea id="followUpQuestionText" rows="4" class="textarea-field resize-y" placeholder="例如：您可以進一步解釋期權數據對未來走勢的影響嗎？或者，如果市場發生X事件，分析結果會如何變化？"></textarea>
+                <div class="flex justify-center mt-4">
+                    <button id="askFollowUpButton" class="button-primary flex items-center justify-center" onclick="askFollowUpQuestion()">
+                        <span id="followUpButtonText">提問</span>
+                        <div id="followUpLoadingAnimation" class="ml-3 hidden stock-line-animation">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <polyline points="2 18, 8 12, 16 16, 22 8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </button>
+                </div>
+                <div id="followUpResults" class="mt-4 text-gray-800 prose prose-lg max-w-none">
+                    <p class="text-gray-600">此處將顯示您對分析結果的進一步提問的回答。</p>
+                </div>
+            </div>
+        </div>
+
+
         <!-- 祝福語區塊 -->
         <div id="finalClosingSection" class="text-center font-bold text-gray-800 text-3xl mt-8 mb-4 hidden">
             祝您賺的缽滿盆滿
@@ -600,11 +623,20 @@
 
     <script>
         // 後端 API 基礎 URL
-        const API_BASE_URL = 'https://stock-ai-backend-api.onrender.com/api'; 
+        const API_BASE_URL = 'https://stock-ai-backend-api.onrender.com/api';
 
         let base64Images = []; // 儲存多張 Base64 圖片的陣列
+        // 用於儲存上一次分析結果的變量，以便後續提問時提供上下文
+        let lastAnalysisResults = {
+            keyPrice: '',
+            details: ''
+        };
 
-        // 預覽多張圖片
+        /**
+         * @function previewMultipleImages
+         * @description 預覽多張圖片，將其轉換為Base64並儲存
+         * @param {Event} event - input file change event
+         */
         function previewMultipleImages(event) {
             const files = event.target.files;
             const imagePreviewContainer = document.getElementById('imagePreviewContainer');
@@ -637,7 +669,12 @@
             });
         }
 
-        // 移除圖片
+        /**
+         * @function removeImage
+         * @description 移除預覽圖片和對應的Base64數據
+         * @param {number} indexToRemove - 要移除的圖片的索引
+         * @param {HTMLElement} previewItemElement - 要移除的預覽圖片元素
+         */
         function removeImage(indexToRemove, previewItemElement) {
             previewItemElement.remove(); // 從 DOM 中移除
 
@@ -646,8 +683,8 @@
 
             // 重新索引剩餘圖像（確保索引一致性）
             base64Images = base64Images.map((item, newIndex) => ({
-                ...item, 
-                index: newIndex 
+                ...item,
+                index: newIndex
             }));
 
             // 更新移除按鈕上的 data-index
@@ -656,7 +693,10 @@
             });
         }
 
-        // --- 分析市場情緒功能 ---
+        /**
+         * @function analyzeSentiment
+         * @description 分析輸入文本的情緒並顯示結果
+         */
         async function analyzeSentiment() {
             const sentimentText = document.getElementById('sentimentText').value;
             const sentimentResultsDiv = document.getElementById('sentimentResults');
@@ -665,7 +705,7 @@
             const sentimentLoadingAnimation = document.getElementById('sentimentLoadingAnimation');
 
             // 清除之前的結果
-            sentimentResultsDiv.innerHTML = ''; 
+            sentimentResultsDiv.innerHTML = '';
 
             if (!sentimentText.trim()) {
                 sentimentResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">請輸入文本以進行情緒分析。</p>';
@@ -676,178 +716,73 @@
             sentimentButtonText.textContent = '分析中...';
             sentimentLoadingAnimation.classList.remove('hidden');
             analyzeSentimentButton.disabled = true;
-            sentimentResultsDiv.innerHTML = '<p class="text-gray-600 flex items-center justify-center"><div class="stock-line-animation"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2 18, 8 12, 16 16, 22 8" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg></div> 正在分析情緒，請稍候...</p>';
-
-            const prompt = `請對以下市場新聞、分析師報告或評論文本進行情緒分析和簡要摘要，並指出其中可能包含的知情交易者活動跡象（例如：巨額交易量、異常的期權活動、大宗交易等）。請以繁體中文的 Markdown 格式輸出，首先是總體情緒評估（例如：看漲、看跌、中性、複雜），然後是知情交易者活動分析（若有發現），最後是簡要摘要。每個部分請用粗體標題。
----
-文本：
-${sentimentText}
----`;
-
-            let payload = {
-                contents: [{
-                    role: "user",
-                    parts: [{ text: prompt }]
-                }],
-            };
 
             try {
-                const proxyApiUrl = `${API_BASE_URL}/gemini`;
-                const response = await fetch(proxyApiUrl, {
+                // 構建提示詞，要求進行情緒分析和摘要
+                const prompt = `請對以下文本進行市場情緒分析和摘要。識別主要情緒（正面、負面、中性），並提取關鍵資訊。\n\n文本：\n"${sentimentText}"`;
+
+                const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Canvas 將自動提供 API key
+
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
-                console.log('--- Debug: Raw API Response (情緒分析) ---');
-                console.log('Raw Result:', JSON.stringify(result, null, 2));
 
                 if (result.candidates && result.candidates.length > 0 &&
                     result.candidates[0].content && result.candidates[0].content.parts &&
                     result.candidates[0].content.parts.length > 0) {
-                    const sentimentOutput = result.candidates[0].content.parts[0].text;
-                    sentimentResultsDiv.innerHTML = `<div class="p-4 bg-gray-50 rounded-lg">${marked.parse(sentimentOutput)}</div>`;
+                    const text = result.candidates[0].content.parts[0].text;
+                    // 使用 marked.js 將 Markdown 渲染為 HTML
+                    sentimentResultsDiv.innerHTML = marked.parse(text);
                 } else {
-                    let errorMessage = '情緒分析失敗：AI 回應結構不符預期或無內容。';
-                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].finishReason) {
-                        errorMessage += `結束原因: ${result.candidates[0].finishReason}.`;
-                    } else if (result.error && result.error.message) {
-                        errorMessage += `API 錯誤訊息: ${result.error.message}.`;
-                    }
-                    sentimentResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">${errorMessage}</p>`;
+                    sentimentResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">分析失敗：未從AI獲取到有效回應。</p>';
                 }
             } catch (error) {
-                console.error('情緒分析請求失敗:', error);
-                sentimentResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">情緒分析請求失敗：${error.message}。請檢查網路連線或稍後再試。</p>`;
+                console.error('情緒分析失敗:', error);
+                sentimentResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">情緒分析失敗，請重試。錯誤：${error.message}</p>`;
             } finally {
-                // 恢復按鈕狀態
+                // 重置按鈕狀態
                 sentimentButtonText.textContent = '分析市場情緒';
                 sentimentLoadingAnimation.classList.add('hidden');
                 analyzeSentimentButton.disabled = false;
             }
         }
-        // --- 結束：分析市場情緒功能 ---
 
-        // --- 獲取增強分析的資料建議功能 ---
-        async function getSuggestionsForAdditionalData() {
-            const stockDescription = document.getElementById('stockDescription').value;
-            const optionDescription = document.getElementById('optionDescription').value;
-            const generalInfo = document.getElementById('generalInfo').value;
-            const sentimentText = document.getElementById('sentimentText').value; // Include sentiment text input
-            const suggestionResultsDiv = document.getElementById('suggestionResults');
-            const getSuggestionsButton = document.getElementById('getSuggestionsButton');
-            const suggestionsButtonText = document.getElementById('suggestionsButtonText');
-            const suggestionsLoadingAnimation = document.getElementById('suggestionsLoadingAnimation');
-
-            // 清除之前的結果
-            suggestionResultsDiv.innerHTML = '<p class="text-gray-600">點擊上方按鈕，AI 將根據您目前的輸入，建議可補充的資料類型。</p>'; // Reset to default
-
-
-            // 顯示載入中狀態
-            suggestionsButtonText.textContent = '獲取建議中...';
-            suggestionsLoadingAnimation.classList.remove('hidden');
-            getSuggestionsButton.disabled = true;
-            suggestionResultsDiv.innerHTML = '<p class="text-gray-600 flex items-center justify-center"><div class="stock-line-animation"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2 18, 8 12, 16 16, 22 8" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg></div> 正在生成資料建議，請稍候...</p>';
-
-
-            let currentInputSummary = '目前已提供的資訊：\n';
-            if (base64Images.length > 0) {
-                currentInputSummary += `- 已上傳 ${base64Images.length} 張圖片 (圖表或示意圖)。\n`;
-            }
-            if (stockDescription) {
-                currentInputSummary += `- 個股描述："${stockDescription.substring(0, 100)}..."\n`;
-            }
-            if (optionDescription) {
-                currentInputSummary += `- 期權描述："${optionDescription.substring(0, 100)}..."\n`;
-            }
-            if (generalInfo) {
-                currentInputSummary += `- 通用資訊："${generalInfo.substring(0, 100)}..."\n`;
-            }
-            if (sentimentText) {
-                currentInputSummary += `- 市場情緒文本："${sentimentText.substring(0, 100)}..."\n`;
-            }
-            if (currentInputSummary === '目前已提供的資訊：\n') {
-                currentInputSummary += '- 無任何輸入資料。';
-            }
-
-
-            const prompt = `根據目前使用者提供的以下輸入資料，請建議可以補充哪些額外的資料類型，以進一步增強股票與期權的綜合分析。請以繁體中文的 **Markdown 清單（條列式）形式** 列出建議，並為每項建議提供簡要理由。
-
-${currentInputSummary}
-
-**建議的補充資料類型：**`;
-
-            let payload = {
-                contents: [{
-                    role: "user",
-                    parts: [{ text: prompt }]
-                }],
-            };
-            // Do not send images for suggestions, as it's about data types not image content analysis.
-
-            try {
-                const proxyApiUrl = `${API_BASE_URL}/gemini`;
-                const response = await fetch(proxyApiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                console.log('--- Debug: Raw API Response (資料建議) ---');
-                console.log('Raw Result:', JSON.stringify(result, null, 2));
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const suggestionOutput = result.candidates[0].content.parts[0].text;
-                    suggestionResultsDiv.innerHTML = `<div class="p-4 bg-gray-50 rounded-lg">${marked.parse(suggestionOutput)}</div>`;
-                } else {
-                    let errorMessage = '獲取資料建議失敗：AI 回應結構不符預期或無內容。';
-                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].finishReason) {
-                        errorMessage += `結束原因: ${result.candidates[0].finishReason}.`;
-                    } else if (result.error && result.error.message) {
-                        errorMessage += `API 錯誤訊息: ${result.error.message}.`;
-                    }
-                    suggestionResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">${errorMessage}</p>`;
-                }
-            } catch (error) {
-                console.error('資料建議請求失敗:', error);
-                suggestionResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">資料建議請求失敗：${error.message}。請檢查網路連線或稍後再試。</p>`;
-            } finally {
-                // 恢復按鈕狀態
-                suggestionsButtonText.textContent = '獲取增強分析的資料建議';
-                suggestionsLoadingAnimation.classList.add('hidden');
-                getSuggestionsButton.disabled = false;
-            }
-        }
-        // --- 結束：獲取增強分析的資料建議功能 ---
-
-
-        // 主要的股票與期權綜合分析功能
+        /**
+         * @function analyzeStockAndOptions
+         * @description 綜合分析股票與期權資訊，並顯示結果
+         */
         async function analyzeStockAndOptions() {
             const stockDescription = document.getElementById('stockDescription').value;
             const optionDescription = document.getElementById('optionDescription').value;
             const generalInfo = document.getElementById('generalInfo').value;
-            const sentimentText = document.getElementById('sentimentText').value; // Get sentiment text here too
-            
-            const keyPricePointsResultsDiv = document.getElementById('keyPricePointsResults'); 
+            const sentimentResults = document.getElementById('sentimentResults').innerText; // 獲取情緒分析結果文本
+            const keyPricePointsResultsDiv = document.getElementById('keyPricePointsResults');
             const analysisDetailsResultsDiv = document.getElementById('analysisDetailsResults');
             const analyzeButton = document.getElementById('analyzeButton');
             const buttonText = document.getElementById('buttonText');
             const loadingAnimation = document.getElementById('loadingAnimation');
-            const finalClosingSectionDiv = document.getElementById('finalClosingSection'); 
+            const finalClosingSection = document.getElementById('finalClosingSection');
+            const technicalAnalysisContent = document.getElementById('technicalAnalysisContent').innerHTML;
+            const marketSuperCyclesContent = document.getElementById('marketSuperCyclesContent').innerHTML;
+            const followUpResultsDiv = document.getElementById('followUpResults');
 
             // 清除之前的結果
-            keyPricePointsResultsDiv.innerHTML = '<p class="text-gray-600">此處將顯示關鍵的進場、出場、支撐、阻力與目標價位資訊。</p>'; 
+            keyPricePointsResultsDiv.innerHTML = '<p class="text-gray-600">此處將顯示關鍵的進場、出場、支撐、阻力與目標價位資訊。</p>';
             analysisDetailsResultsDiv.innerHTML = '<p class="text-gray-600">此處將顯示技術分析、期權信息整合、市場情緒等詳細內容。</p>';
-            finalClosingSectionDiv.classList.add('hidden'); // 初始隱藏祝福語區塊
+            followUpResultsDiv.innerHTML = '<p class="text-gray-600">此處將顯示您對分析結果的進一步提問的回答。</p>'; // 清除後續提問結果
+            finalClosingSection.classList.add('hidden'); // 隱藏祝福語
 
-
-            if (base64Images.length === 0 && !stockDescription && !optionDescription && !generalInfo && !sentimentText) {
-                keyPricePointsResultsDiv.innerHTML = ''; 
-                analysisDetailsResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">請至少上傳一張圖表或輸入相關描述以進行分析。</p>';
+            // 檢查是否提供了足夠的輸入
+            if (!stockDescription.trim() && !optionDescription.trim() && !generalInfo.trim() && base64Images.length === 0 && !sentimentResults.trim()) {
+                keyPricePointsResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">請至少提供股票描述、期權資訊、通用資訊或上傳圖表，才能進行分析。</p>';
                 return;
             }
 
@@ -855,170 +790,254 @@ ${currentInputSummary}
             buttonText.textContent = '分析中...';
             loadingAnimation.classList.remove('hidden');
             analyzeButton.disabled = true;
-            keyPricePointsResultsDiv.innerHTML = ''; 
-            analysisDetailsResultsDiv.innerHTML = '<p class="text-gray-600 flex items-center justify-center"><div class="stock-line-animation"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2 18, 8 12, 16 16, 22 8" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg></div> 正在綜合分析，請稍候...</p>';
-
-            // 構建 AI Prompt
-            let prompt = `請根據以下提供的所有資訊（包括股票線圖、期權資訊、通用描述、市場情緒以及市場超級週期參考資料），對該標的進行全面的技術分析與未來走勢評估。請綜合考量各種信息，特別是期權市場的潛在信息。請特別注意上傳圖片中K線圖或任何圖表的週期（例如：分、時、日、週、月、年），並在分析中明確說明您識別出的週期。請以繁體中文回應。
-
----START_SUMMARY---
-**分析結果概覽：關鍵價位與潛在目標價**
-請將最重要的進場點位、出場點位（止損點）、關鍵支撐位、關鍵阻力位，以及透過技術分析評估的目標價（針對每個目標價提供明確的機率百分比或高/中/低等級 **和可能的完成時間範圍**）以**Markdown 清單（條列式）形式**，優先列出於此報告的最開頭部分。
-每個項目請用 "項目：價位/區間 (備註/機率/目標時間)" 的格式表示。例如：
-- 建議進場點位：210-215 (回調至前期阻力位附近，若能守住則可進場)
-- 建議出場點位：195-200 (止損點) 跌破上升趨勢線
-- 主要支撐位：160-170 (前期盤整區間，強支撐)
-- 主要阻力位：240 (前期高點附近，可能存在阻力)
-- 目標價 1：230-240 (可能機率：中等 (50%)，目標時間：3個月內，突破前期阻力，持續上漲)
-- 目標價 2：250-260 (可能機率：較低 (30%)，目標時間：6個月內，需突破更多阻力)
-- 目標價 3：270+ (可能機率：極低 (10%)，目標時間：12個月內，市場整體看好)
----END_SUMMARY---
-
----START_DETAILS---
-**詳細綜合分析**
-請在上述「分析結果概覽」之後，提供詳細的綜合評估。內容請基於您提供的PDF內容以及期權相關知識，包含但不限於以下項目。
-**非常重要：請務必在每個分析部分開始時使用 Markdown 二級標題 (##) 進行標示，例如 "## 市場情緒與知情交易者活動評估"，以確保字體較大且易於閱讀。**
-
-## 圖表週期識別
-請根據上傳圖片的內容，明確指出您識別出的圖表週期（例如：日線圖、週線圖等），並簡要說明其對分析的意義。
-
-## 市場情緒與知情交易者活動評估
-## 期權信息對股票走勢的潛在影響
-## 圖表模式識別詳述
-## 技術指標分析詳述
-## 結合超級週期概念的宏觀展望
-## 總結與風險提示
----END_DETAILS---
-`;
-
-            if (stockDescription) {
-                prompt += `\n**使用者提供的個股相關描述：**\n${stockDescription}\n`;
-            }
-            if (optionDescription) {
-                prompt += `\n**使用者提供的期權相關資訊描述：**\n${optionDescription}\n`;
-            }
-            if (generalInfo) {
-                prompt += `\n**使用者提供的其他通用資訊：**\n${generalInfo}\n`;
-            }
-            if (sentimentText) { // Include sentiment text if available
-                prompt += `\n**使用者提供的市場情緒分析文本：**\n${sentimentText}\n`;
-            }
-
-            // 技術分析參考資料 (此區塊在 HTML 中已隱藏，但內容會作為 Prompt 發送給 AI)
-            prompt += "\n**以下是技術分析參考資料，請務必將其作為分析依據：**\n";
-            prompt += document.getElementById('technicalAnalysisContent').innerText + "\n\n";
-
-            // 新增：市場超級週期參考資料 (此區塊在 HTML 中已隱藏，但內容會作為 Prompt 發送給 AI)
-            prompt += "\n**以下是市場超級週期參考資料，請將其納入宏觀展望的考量：**\n";
-            prompt += document.getElementById('marketSuperCyclesContent').innerText + "\n\n";
-
-            prompt += `\n**請務必嚴格遵循以上輸出格式，使用 ---START_SUMMARY--- 和 ---END_SUMMARY--- 標記來包圍概覽部分，並使用 ---START_DETAILS--- 和 ---END_DETAILS--- 標記來包圍詳細分析部分。**
-**在 ---END_DETAILS--- 標記之後，請不要輸出任何內容。我將在前端直接顯示祝福語。**`; // 指示AI不要輸出祝福語
-
-            let payload = {
-                contents: [{
-                    role: "user",
-                    parts: [{ text: prompt }]
-                }],
-            };
-
-            base64Images.forEach(img => {
-                payload.contents[0].parts.push({
-                    inlineData: {
-                        mimeType: img.mimeType,
-                        data: img.data
-                    }
-                });
-            });
-
-            console.log('--- Debug: Sending Payload ---');
-            console.log('Payload contents:', JSON.stringify(payload.contents, null, 2));
 
             try {
-                const proxyApiUrl = `${API_BASE_URL}/gemini`;
+                let promptParts = [];
+                promptParts.push("請根據以下提供的股票圖表、描述、期權資訊、通用資訊和市場情緒，對當前股票/期權狀況進行詳細的綜合分析。分析應涵蓋技術分析（K線圖、圖表型態、支撐阻力）、期權信息整合、市場情緒影響，並給出關鍵價位概覽和潛在目標價。請參考下方提供的技術分析知識和市場超級週期理論進行更深入的分析。\n\n");
 
-                const response = await fetch(proxyApiUrl, {
+                if (base64Images.length > 0) {
+                    promptParts.push("以下是上傳的股票/期權相關圖表：");
+                    base64Images.forEach((img, idx) => {
+                        promptParts.push(`[Image of 圖表 ${idx + 1}]`); // 用圖像描述佔位符
+                    });
+                    promptParts.push("\n");
+                }
+
+                if (stockDescription.trim()) {
+                    promptParts.push(`個股相關描述：${stockDescription}\n`);
+                }
+                if (optionDescription.trim()) {
+                    promptParts.push(`期權相關資訊：${optionDescription}\n`);
+                }
+                if (generalInfo.trim()) {
+                    promptParts.push(`其他通用資訊：${generalInfo}\n`);
+                }
+                if (sentimentResults.trim() && sentimentResults !== '此處將顯示情緒分析結果。') { // 排除初始占位符文本
+                    promptParts.push(`市場情緒分析結果：${sentimentResults}\n`);
+                }
+
+                promptParts.push(`\n\n--- 技術分析參考資料 ---\n${technicalAnalysisContent}\n\n`);
+                promptParts.push(`\n\n--- 市場超級週期參考資料 ---\n${marketSuperCyclesContent}\n\n`);
+                promptParts.push("請按照以下兩個區塊輸出結果：\n\n");
+                promptParts.push("### 關鍵價位與潛在目標價概覽\n請提供關鍵的進場價位、出場價位、支撐位、阻力位和潛在目標價。請使用Markdown表格形式呈現，並簡要說明其依據。\n\n");
+                promptParts.push("### 詳細綜合分析結果\n請提供以下方面的詳細分析：\n1.  **技術分析**：根據上傳圖表（若有）和提供的描述，識別K線圖型態、圖表型態（如頭肩頂、雙重底、旗形等），並分析支撐與阻力位、趨勢線，以及成交量對趨勢的確認。請引用提供的技術分析參考資料。\n2.  **期權信息整合**：結合期權交易量、未平倉合約、隱含波動率等信息，分析市場預期和潛在波動性，並與股票走勢進行綜合判斷。\n3.  **市場情緒影響**：結合市場情緒分析結果（若有），說明其對股票和期權市場的影響。\n4.  **宏觀經濟/超級週期考量**：結合通用資訊和提供的市場超級週期參考資料，討論相關宏觀經濟因素和當前所處的市場超級週期階段對標的資產的潛在影響。\n5.  **綜合判斷與策略建議**：基於上述所有分析，給出一個綜合判斷，並提供潛在的交易或投資策略建議（例如：看漲、看跌、區間操作，以及考慮買入看漲/看跌期權或相關套利策略）。\n\n請務必輸出Markdown格式的內容。");
+
+
+                const fullPrompt = promptParts.join('');
+
+                // 構建 API 請求的 parts 陣列
+                let requestParts = [{ text: fullPrompt }];
+                base64Images.forEach(img => {
+                    requestParts.push({
+                        inlineData: {
+                            mimeType: img.mimeType,
+                            data: img.data
+                        }
+                    });
+                });
+
+                const chatHistory = [{ role: "user", parts: requestParts }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Canvas 將自動提供 API key
+
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
-                console.log('--- Debug: Raw API Response (股票與期權綜合分析) ---');
-                console.log('Raw Result:', JSON.stringify(result, null, 2));
 
                 if (result.candidates && result.candidates.length > 0 &&
                     result.candidates[0].content && result.candidates[0].content.parts &&
                     result.candidates[0].content.parts.length > 0) {
-                    const fullText = result.candidates[0].content.parts[0].text;
-                    console.log('--- Debug: Full Text from AI ---');
-                    console.log('Full Text:', fullText);
+                    const text = result.candidates[0].content.parts[0].text;
 
-                    const summaryMatch = fullText.match(/---START_SUMMARY---([\s\S]*?)---END_SUMMARY---/);
-                    let summaryContent = summaryMatch && summaryMatch[1] ? summaryMatch[1].trim() : '';
-                    console.log('--- Debug: Extracted Summary Content ---');
-                    console.log('Summary Content (raw):', summaryMatch ? summaryMatch[1] : 'No Match');
-                    console.log('Summary Content (trimmed):', summaryContent);
+                    // 將結果分割成兩個部分
+                    const parts = text.split('### 詳細綜合分析結果');
+                    if (parts.length > 1) {
+                        const keyPriceMarkdown = parts[0];
+                        const analysisDetailsMarkdown = '### 詳細綜合分析結果' + parts[1]; // 加上標題
 
-                    if (!summaryContent) {
-                        summaryContent = '<p class="text-red-600 font-semibold">未能獲取概覽資訊，請嘗試重新分析或提供更清晰的輸入。</p>';
+                        keyPricePointsResultsDiv.innerHTML = marked.parse(keyPriceMarkdown);
+                        analysisDetailsResultsDiv.innerHTML = marked.parse(analysisDetailsMarkdown);
+                        
+                        // 儲存最新的分析結果，供後續提問使用
+                        lastAnalysisResults.keyPrice = keyPriceMarkdown;
+                        lastAnalysisResults.details = analysisDetailsMarkdown;
+
+                        finalClosingSection.classList.remove('hidden'); // 顯示祝福語
+                    } else {
+                        // 如果沒有分割成功，則全部顯示在詳細分析中
+                        analysisDetailsResultsDiv.innerHTML = marked.parse(text);
+                        keyPricePointsResultsDiv.innerHTML = '<p class="text-red-orange-600 font-semibold">未能解析出關鍵價位概覽，請查看詳細綜合分析。</p>';
+                        
+                        // 儲存最新的分析結果
+                        lastAnalysisResults.keyPrice = ''; // 清空，因為沒有單獨解析
+                        lastAnalysisResults.details = text;
+
+                        finalClosingSection.classList.remove('hidden');
                     }
-                    try {
-                        keyPricePointsResultsDiv.innerHTML = `<div class="p-4 bg-gray-50 rounded-lg">${marked.parse(summaryContent)}</div>`;
-                        console.log('--- Debug: Summary HTML rendered ---');
-                    } catch (markedError) {
-                        console.error('Error rendering summary Markdown:', markedError);
-                        keyPricePointsResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">概覽解析失敗：${markedError.message}。請檢查AI回應格式。</p>`;
-                    }
-
-                    const detailsStartIndex = fullText.indexOf('---START_DETAILS---');
-                    const detailsEndIndex = fullText.indexOf('---END_DETAILS---', detailsStartIndex);
-                    let detailsContent = '';
-
-                    if (detailsStartIndex !== -1 && detailsEndIndex !== -1) {
-                        detailsContent = fullText.substring(detailsStartIndex + '---START_DETAILS---'.length, detailsEndIndex).trim();
-                    } else if (detailsStartIndex !== -1) {
-                        detailsContent = fullText.substring(detailsStartIndex + '---START_DETAILS---'.length).trim();
-                    }
-                    console.log('--- Debug: Extracted Details Content ---');
-                    console.log('Details Content (raw):', (detailsStartIndex !== -1) ? fullText.substring(detailsStartIndex + '---START_DETAILS---'.length, detailsEndIndex !== -1 ? detailsEndIndex : fullText.length) : 'No Match');
-                    console.log('Details Content (trimmed):', detailsContent);
-
-
-                    if (!detailsContent) {
-                        detailsContent = '<p class="text-red-600 font-semibold">未能獲取詳細分析，請嘗試重新分析或提供更清晰的輸入。</p>';
-                    }
-                    try {
-                        analysisDetailsResultsDiv.innerHTML = `<div class="p-4 bg-gray-50 rounded-lg">${marked.parse(detailsContent)}</div>`;
-                        console.log('--- Debug: Details HTML rendered ---');
-                    } catch (markedError) {
-                        console.error('Error rendering details Markdown:', markedError);
-                        analysisDetailsResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">詳細分析解析失敗：${markedError.message}。請檢查AI回應格式。</p>`;
-                    }
-
-                    finalClosingSectionDiv.classList.remove('hidden');
 
                 } else {
-                    let errorMessage = '分析失敗：AI 回應結構不符預期或無內容。';
-                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].finishReason) {
-                        errorMessage += `結束原因: ${result.candidates[0].finishReason}.`;
-                    } else if (result.error && result.error.message) {
-                        errorMessage += `API 錯誤訊息: ${result.error.message}.`;
-                    }
-                    errorMessage += `請檢查圖片清晰度及描述。詳細回應請查看控制台。`;
-
-                    keyPricePointsResultsDiv.innerHTML = '';
-                    analysisDetailsResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">${errorMessage}</p>`;
+                    analysisDetailsResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">綜合分析失敗：未從AI獲取到有效回應。</p>';
                 }
             } catch (error) {
-                console.error('API 請求失敗:', error);
-                keyPricePointsResultsDiv.innerHTML = '';
-                analysisDetailsResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">API 請求失敗：${error.message}。請檢查網路連線或後端服務是否正常運行。</p>`;
+                console.error('綜合分析失敗:', error);
+                analysisDetailsResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">綜合分析失敗，請重試。錯誤：${error.message}</p>`;
             } finally {
-                // 恢復按鈕狀態
+                // 重置按鈕狀態
                 buttonText.textContent = '開始綜合分析';
                 loadingAnimation.classList.add('hidden');
                 analyzeButton.disabled = false;
+            }
+        }
+
+        /**
+         * @function getSuggestionsForAdditionalData
+         * @description 根據現有輸入提供增強分析的資料建議
+         */
+        async function getSuggestionsForAdditionalData() {
+            const stockDescription = document.getElementById('stockDescription').value;
+            const optionDescription = document.getElementById('optionDescription').value;
+            const generalInfo = document.getElementById('generalInfo').value;
+            const suggestionResultsDiv = document.getElementById('suggestionResults');
+            const getSuggestionsButton = document.getElementById('getSuggestionsButton');
+            const suggestionsButtonText = document.getElementById('suggestionsButtonText');
+            const suggestionsLoadingAnimation = document.getElementById('suggestionsLoadingAnimation');
+
+            // 清除之前的結果
+            suggestionResultsDiv.innerHTML = '<p class="text-gray-600">點擊上方按鈕，AI 將根據您目前的輸入，建議可補充的資料類型。</p>';
+
+            // 顯示載入中狀態
+            suggestionsButtonText.textContent = '獲取建議中...';
+            suggestionsLoadingAnimation.classList.remove('hidden');
+            getSuggestionsButton.disabled = true;
+
+            try {
+                let currentInputs = [];
+                if (stockDescription.trim()) currentInputs.push("個股相關描述");
+                if (optionDescription.trim()) currentInputs.push("期權相關資訊描述");
+                if (generalInfo.trim()) currentInputs.push("其他通用資訊");
+                if (base64Images.length > 0) currentInputs.push("上傳的圖表");
+                if (document.getElementById('sentimentText').value.trim()) currentInputs.push("市場情緒分析文本");
+
+
+                let prompt = "根據用戶當前已提供的以下信息，請建議還可以補充哪些類型的數據或信息，以便對股票和期權進行更全面、深入的分析。請具體說明為什麼這些數據會有所幫助，並以Markdown列表形式列出建議。\n\n";
+                if (currentInputs.length > 0) {
+                    prompt += `用戶目前已提供：${currentInputs.join("、") || "無"}\n\n`;
+                } else {
+                    prompt += `用戶目前未提供任何資訊。請建議一些基礎的股票和期權分析所需數據。\n\n`;
+                }
+                prompt += "建議：\n";
+
+
+                const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Canvas 將自動提供 API key
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    suggestionResultsDiv.innerHTML = marked.parse(text);
+                } else {
+                    suggestionResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">獲取建議失敗：未從AI獲取到有效回應。</p>';
+                }
+            } catch (error) {
+                console.error('獲取建議失敗:', error);
+                suggestionResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">獲取建議失敗，請重試。錯誤：${error.message}</p>`;
+            } finally {
+                // 重置按鈕狀態
+                suggestionsButtonText.textContent = '獲取增強分析的資料建議';
+                suggestionsLoadingAnimation.classList.add('hidden');
+                getSuggestionsButton.disabled = false;
+            }
+        }
+
+        /**
+         * @function askFollowUpQuestion
+         * @description 根據之前的分析結果和用戶的新問題進行更深入的分析
+         */
+        async function askFollowUpQuestion() {
+            const followUpQuestionText = document.getElementById('followUpQuestionText').value;
+            const followUpResultsDiv = document.getElementById('followUpResults');
+            const askFollowUpButton = document.getElementById('askFollowUpButton');
+            const followUpButtonText = document.getElementById('followUpButtonText');
+            const followUpLoadingAnimation = document.getElementById('followUpLoadingAnimation');
+
+            // 清除之前的後續提問結果
+            followUpResultsDiv.innerHTML = '';
+
+            if (!followUpQuestionText.trim()) {
+                followUpResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">請輸入您的問題。</p>';
+                return;
+            }
+
+            // 檢查是否有先前的分析結果作為上下文
+            if (!lastAnalysisResults.keyPrice && !lastAnalysisResults.details) {
+                followUpResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">請先執行一次綜合分析，才能針對結果進行提問。</p>';
+                return;
+            }
+
+            // 顯示載入中狀態
+            followUpButtonText.textContent = '分析中...';
+            followUpLoadingAnimation.classList.remove('hidden');
+            askFollowUpButton.disabled = true;
+
+            try {
+                let prompt = "根據我之前提供的股票/期權綜合分析結果，請回答我的以下問題。請確保您的回答基於先前的分析內容，並提供深入的見解。\n\n";
+                
+                // 包含上一次的分析結果作為上下文
+                if (lastAnalysisResults.keyPrice) {
+                    prompt += `--- 先前關鍵價位與潛在目標價概覽 ---\n${lastAnalysisResults.keyPrice}\n\n`;
+                }
+                if (lastAnalysisResults.details) {
+                    prompt += `--- 先前詳細綜合分析結果 ---\n${lastAnalysisResults.details}\n\n`;
+                }
+
+                prompt += `我的問題是：「${followUpQuestionText}」\n\n請以Markdown格式回答。`;
+
+                const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Canvas 將自動提供 API key
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    followUpResultsDiv.innerHTML = marked.parse(text);
+                } else {
+                    followUpResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">提問失敗：未從AI獲取到有效回應。</p>';
+                }
+            } catch (error) {
+                console.error('後續提問失敗:', error);
+                followUpResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">後續提問失敗，請重試。錯誤：${error.message}</p>`;
+            } finally {
+                // 重置按鈕狀態
+                followUpButtonText.textContent = '提問';
+                followUpLoadingAnimation.classList.add('hidden');
+                askFollowUpButton.disabled = false;
             }
         }
     </script>
