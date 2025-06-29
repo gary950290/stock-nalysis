@@ -7,6 +7,8 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -203,7 +205,6 @@
                     <!-- 股價折線圖朝上的小動畫 -->
                     <div id="loadingAnimation" class="ml-3 hidden stock-line-animation">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <polyline points="2 18, 8 12, 16 16, 22 8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                             <polyline points="2 18, 8 12, 16 16, 22 8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </div>
@@ -461,16 +462,147 @@
                 <li>**技術分析假設 (Technical Analysis Assumptions)**: 市場消化一切、價格沿趨勢移動、歷史會重演。</li>
             </ul>
         </div>
+        
+        <!-- 市場超級週期參考資料區塊 - 此區塊已隱藏，但內容會提供給 AI 進行分析 -->
+        <div id="marketSuperCyclesContent" class="hidden">
+            <h3>市場中的結構性變化與超級週期：高盛首席分析師的見解</h3>
+            <p>這份文件摘錄自《高盛首席分析師教你剖析超級週期：掌握進場的訊號》，提供了關於金融市場週期和長期趨勢的見解，尤其強調了「超級週期」的概念及其影響因素。</p>
+
+            <h4>序言：週期與長期趨勢簡介</h4>
+            <p>金融市場週期往往會隨著時間重複其模式，並在長期結構性趨勢的範圍內展開。歷史表明，經濟活動和實際收入可能數十年來相對平緩甚至倒退，而另一些時期則經歷持續的增長和繁榮。同樣，在金融市場中，也存在著長期時期或「超級週期」，其中整體回報受到抑制，而另一些時期則呈現出強勁的上升趨勢。當這些長期趨勢或體制發生變化時，由於投資者往往沒有為其做好準備，假設根深蒂固，因此調整適應新現實的速度往往很慢，這可能會產生重大影響。</p>
+
+            <h5>重複的週期</h5>
+            <p>週期無處不在，不僅在自然界中，在人類本性、社會、經濟以及金融市場中亦是如此。社會優先事項、政治、國際關係和經濟條件之間的複雜性和相互關聯性意味著這些週期通常存在於長期或延伸的時期中，這些時期是結構性趨勢的函數，可以為金融市場帶來截然不同的結果。</p>
+
+            <h5>心理與金融市場超級週期</h5>
+            <p>除了金融週期與經濟週期之間的關係之外，某些人類行為模式也反映並有時會放大預期的經濟狀況。投資者如何看待經濟學和基本面，對於這種組合至關重要。學術研究日益表明，冒險意願是支持性政策（例如低利率）影響週期的關鍵渠道。冒險意願和過度謹慎的時期（通常在一段時間的疲軟回報之後）是往往會放大經濟基本面對金融市場的影響並促成週期和重複模式的因素。</p>
+
+            <h4>第一部分：結構性趨勢與市場超級週期</h4>
+            <p>本節深入探討了驅動長期趨勢的因素，並將經濟活動、通貨膨脹、利率、政府債務和不平等視為超級週期的關鍵驅動因素。</p>
+
+            <h5>股票週期及其驅動因素</h5>
+            <p>歷史上，金融市場的短期週期和長期超級週期或長期趨勢中都存在模式，其中短期週期會隨之演變。儘管股票回報的長期轉變取決於普遍的宏觀經濟狀況（特別是增長與利率之間的權衡），但大多數股票市場都表現出週期性變動的趨勢，這在一定程度上與普遍的商業週期相關。</p>
+            <p>一個投資週期通常包括熊市（價格下跌的時期）和牛市（股價普遍上漲或價格回報相對穩定的時期）。儘管如此，沒有兩個週期，甚至長期超級週期是完全相同的。有些比其他週期長得多，有些可能在中途被中斷，例如由於特定的衝擊或事件導致指數回到轉折點而沒有完成整個週期。</p>
+            <p>股票週期通常可分為四個截然不同的階段，每個階段都由不同的因素驅動：</p>
+            <ol>
+                <li><strong>絕望 (Despair)</strong>：市場從高峰走向低谷的時期，也稱為熊市。這主要是由估值下降（本益比收縮）驅動的，因為市場預期並應對不斷惡化的宏觀經濟環境及其對預期收益下降的影響。</li>
+                <li><strong>希望 (Hope)</strong>：一個通常較短的時期，市場從估值低谷反彈（本益比擴張）。這是在預期經濟週期即將觸底以及未來利潤增長的情況下發生的，並導致估值倍數的上升。</li>
+                <li><strong>成長 (Growth)</strong>：這通常是持續時間最長的時期，收益增長推動回報。</li>
+                <li><strong>樂觀 (Optimism)</strong>：週期的最後一部分，投資者變得越來越自信，甚至自滿，估值傾向於再次上升並超越收益增長，從而為下一次市場調整奠定基礎。</li>
+            </ol>
+
+            <h5>超級週期及其驅動因素</h5>
+            <p>超級週期是指經濟活動和實際收入可能相對平穩甚至倒退數十年的時期，而其他時期則經歷持續的增長和繁榮。同樣，在金融市場中，也存在長期階段或超級週期，其中整體回報受到抑制，而另一些時期則呈現出強勁的上升趨勢。</p>
+            <h6>經濟活動的超級週期</h6>
+            <p>從歷史上看，長期經濟繁榮時期是由多種因素的重大階段性變化驅動的，這些因素包括技術進步、金融市場創新、移民和貿易增加。所有這些因素在解釋 20 世紀的增長和金融市場超級週期方面仍然是重要因素。</p>
+            <h6>通貨膨脹的超級週期</h6>
+            <p>從金融市場的角度來看，兩個主要變數最重要：增長和通貨膨脹。儘管有證據表明經濟增長和收縮存在長波，但通貨膨脹數據也呈週期性。通貨膨脹像經濟增長一樣，並沒有直線增長，而是隨著時間經歷了各種結構性事件。</p>
+            <h6>利率的超級週期</h6>
+            <p>利率的歷史同樣令人驚嘆，兩者之間息息相關。自 14 世紀以來，全球債券殖利率普遍呈下降趨勢。與金融資產的其他主要宏觀變數和驅動因素一樣，這並非直線下降。當然，也有利率上升的時期，但總體趨勢是利率隨著時間大幅下降。</p>
+            <h6>政府債務的超級週期</h6>
+            <p>除了增長、通貨膨脹和利率之外，還有政府債務的超級週期證據。同樣，儘管經濟狀況對債務產生影響，但債務水準的長波顯示了經濟活動、通貨膨脹和政府政策之間的關鍵相互作用。</p>
+            <h6>不平等的超級週期</h6>
+            <p>歷史表明，不平等與上述其他宏觀經濟驅動因素一樣，也是週期性的，儘管它在長期趨勢中緩慢變化。</p>
+
+            <h4>第二部分：分析戰後超級週期</h4>
+            <p>本節詳細分析了戰後主要的超級週期，重點關注了其獨特的驅動因素和市場表現。</p>
+
+            <h5>1949–1968：戰後繁榮</h5>
+            <p>這個時期以強勁的戰後經濟繁榮為主導，通常被稱為「資本主義黃金時代」。它得到了美國通過馬歇爾計畫（或歐洲復甦計畫）對歐洲經濟援助的支援，這有助於促進增長和減少失業。生產力增長強勁，特別是在歐洲和東亞，戰後「嬰兒潮」進一步刺激了需求。</p>
+            <ul>
+                <li><strong>國際協定與風險溢價下降</strong>：戰後建立新的規則基礎經濟管理和國際貿易體系，降低了全球系統風險。</li>
+                <li><strong>強勁的經濟增長</strong>：馬歇爾計畫等倡議推動了美國和歐洲的經濟快速增長。</li>
+                <li><strong>技術創新</strong>：電視、晶體管、太空探索等創新改變了生活方式並促進了經濟增長。</li>
+                <li><strong>低且穩定的實際利率</strong>：戰後重建和金融壓抑政策維持了低利率，幫助政府償還債務。</li>
+                <li><strong>世界貿易的繁榮</strong>：GATT 等新組織的建立促進了全球貿易的大幅增長。</li>
+                <li><strong>嬰兒潮</strong>：戰後人口的顯著增長刺激了消費需求和經濟活力。</li>
+                <li><strong>消費與信貸繁榮</strong>：失業率下降、福利國家建立、信用卡創新等因素共同推動了消費和信貸的爆炸性增長。</li>
+            </ul>
+
+            <h5>1968–1982：通貨膨脹與低回報</h5>
+            <p>從 1970 年代初到 1980 年代初，是投資者歷史上最糟糕的十年之一。通貨膨脹和利率飆升，加上兩次深度衰退和停滯不前的增長，在滯脹的環境下對股票和固定收益市場造成了壓力。這種組合導致了長達十多年的高波動性和低回報的「肥胖而平坦」環境。</p>
+            <ul>
+                <li><strong>投資者的「失落的十年」</strong>：儘管名義上股價指數有所上漲，但高通脹導致實際回報大幅降低。</li>
+                <li><strong>高利率與低增長</strong>：通貨膨脹和利率飆升導致了兩次衰退，並長期伴隨經濟疲軟，最終導致了全球債務危機。</li>
+                <li><strong>社會動盪與罷工</strong>：失業率飆升和生活成本上升導致了廣泛的罷工和社會動盪，反映在藝術和音樂中。</li>
+                <li><strong>貿易崩潰、保護主義與管制加劇</strong>：多個國家的貿易失衡導致保護主義抬頭，企業利潤空間受到擠壓。</li>
+                <li><strong>公共支出增加，利潤率下降</strong>：政府支出增加、工資上漲和企業管制導致企業利潤佔 GDP 的份額大幅下降。</li>
+            </ul>
+
+            <h5>1982–2000：現代週期</h5>
+            <p>從 1982 年到 2000 年的長期牛市總體而言是一個金融市場回報豐厚且波動性低的時期。儘管如此，與大多數長期牛市一樣，它也經歷了多個週期。與 1970 年代的「肥胖而平坦」趨勢不同，1980 年代的衰退伴隨著通貨膨脹和利率的下降趨勢，這使得市場能夠產生強勁的回報。</p>
+            <ul>
+                <li><strong>大穩健時期</strong>：關鍵宏觀經濟變數的波動性顯著降低，有利於企業規劃和降低投資者的對沖成本。</li>
+                <li><strong>通貨緊縮與較低的資本成本</strong>：通貨膨脹和利率大幅下降，推動了股票和債券的估值擴張，並刺激了企業盈利增長。歐洲單一貨幣的趨同進一步推動了全球利率下降。</li>
+                <li><strong>貨幣政策與「聯準會看跌期權」</strong>：聯準會在市場下跌時降息的傾向成為長期牛市的核心支持機制，增加了投資者的信心。</li>
+                <li><strong>供給側改革（包括解除管制和私有化）</strong>：里根和柴契爾政府推動了減稅、解除管制和私有化，提高了效率並吸引了外國投資。</li>
+                <li><strong>蘇聯解體（地緣政治風險降低）</strong>：冷戰結束，美國的政治和經濟霸權得以鞏固，降低了地緣政治風險，刺激了資本流動。</li>
+                <li><strong>全球化與合作</strong>：廣場協議和盧浮宮協議穩定貨幣，同時貿易協定和資本市場開放促進了全球貿易和外國直接投資的爆炸式增長。</li>
+                <li><strong>中國與印度的影響</strong>：中國經濟特區的設立和印度改革開放，將大量廉價勞動力融入全球經濟，推動了全球製造業和服務業的增長。</li>
+                <li><strong>泡沫與金融創新</strong>：經濟增長、低利率和「聯準會看跌期權」的信心導致了金融投機的增長，特別是衍生品市場的發展。日本資產泡沫和 2000 年的科技泡沫是這一時期金融投機的顯著例子。</li>
+            </ul>
+
+            <h5>2000–2009：泡沫與困境</h5>
+            <p>2000 年至 2009 年的週期，與 1970 年代的週期一樣，可以被描述為「肥胖而平坦」——低回報被急劇下跌和強勁反彈的時期所打斷。這是一個泡沫和重大市場崩潰的十年，其基礎是日益加劇的地緣政治不確定性。</p>
+            <ul>
+                <li><strong>科技泡沫破裂</strong>：由廉價資金和強勁敘事推動的科技股泡沫破裂，導致估值大幅下跌，儘管該行業最終在低增長和低利率的環境下重新崛起。</li>
+                <li><strong>2007-2009 年金融危機</strong>：繼 9/11 襲擊後，利率的迅速下調為新的投機浪潮創造了沃土，導致了美國的房地產繁榮，隨後在 2007 年破裂，引發了全球金融危機。</li>
+                <li><strong>增長預期下降</strong>：金融危機後經濟復甦乏力，導致企業銷售增長預期下降，特別是在歐洲和日本。</li>
+                <li><strong>股票風險溢價上升</strong>：不確定性加劇和對長期增長的擔憂導致投資者要求更高的股票風險溢價。</li>
+                <li><strong>股票/債券負相關</strong>：由於對通貨緊縮的擔憂，利率下降對股票產生了負面影響，導致股票與債券之間出現負相關。</li>
+            </ul>
+
+            <h4>第三部分：後現代週期</h4>
+            <p>本節探討了當前和未來可能定義「後現代週期」的結構性變化，這些變化將影響投資回報和行業領導力。</p>
+
+            <h5>後現代週期</h5>
+            <p>後現代週期的出現，將定義未來幾十年的市場。這個新時代可能表現出戰後傳統週期的一些特徵，例如更高的波動性和更弱的回報，但也將分享 1980 年後主導的現代週期的一些元素，例如低波動性和估值上升。</p>
+            <ul>
+                <li><strong>資本成本上升</strong>：長期的通貨緊縮趨勢結束，通貨膨脹重新出現，導致利率上升，從而推高資本成本。</li>
+                <li><strong>趨勢增長放緩</strong>：全球化逆轉、人口結構變化和生產力增長乏力，導致長期經濟增長放緩。</li>
+                <li><strong>從全球化轉向區域化</strong>：地緣政治緊張局勢加劇、供應鏈中斷和國家安全優先級提升，導致貿易模式從全球化轉向區域化。</li>
+                <li><strong>勞動力和商品成本上升</strong>：脫離全球化、勞動力供應減少和能源轉型導致勞動力和商品成本結構性上升。</li>
+                <li><strong>政府支出和債務增加</strong>：能源轉型、國防支出和產業政策等因素推動政府支出和債務大幅增加。</li>
+                <li><strong>資本和基礎設施支出增加</strong>：為支援能源轉型和重建供應鏈，全球基礎設施和資本支出將大幅增加。</li>
+                <li><strong>人口結構變化</strong>：人口老齡化和勞動力供應減少對生產力增長、儲蓄和投資模式產生重大影響。</li>
+                <li><strong>地緣政治緊張局勢加劇與多極世界</strong>：地緣政治競爭加劇、中國崛起和多極世界秩序的出現增加了不確定性和波動性。</li>
+            </ul>
+
+            <h5>後現代週期與科技</h5>
+            <p>科技和人工智慧（AI）將如何塑造後現代週期的市場回報。</p>
+            <ul>
+                <li><strong>技術革命的特點</strong>：技術革命通常伴隨著興奮、投機和泡沫，然後是行業的整合和主導公司的出現。</li>
+                <li><strong>AI 和生產力的影響</strong>：AI 有望提高生產力，彌補過去幾十年生產力增長的不足。</li>
+                <li><strong>PERL 框架</strong>：一個用於評估 AI 影響的框架，將公司分為先驅者（Pioneers）、推動者（Enablers）、適應者（Adaptors）、改革者（Reformers）和落後者（Laggards）。
+                    <ul>
+                        <li><strong>先驅者 (Pioneers)</strong>：這些公司創造了新技術，例如晶片製造商和基礎模型開發商。</li>
+                        <li><strong>推動者 (Enablers)</strong>：這些公司提供了技術得以運行的基礎設施，例如雲端服務提供商和數據中心。</li>
+                        <li><strong>適應者 (Adaptors)</strong>：這些公司在非科技行業中採用新技術來改進其業務模式。</li>
+                        <li><strong>改革者 (Reformers)</strong>：這些公司利用新技術從根本上改變行業，創造新的商業模式和市場。</li>
+                        <li><strong>落後者 (Laggards)</strong>：這些公司未能適應新技術，可能面臨衰退或被淘汰的風險。</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h5>後現代週期：「舊經濟」中的機會</h5>
+            <p>後現代週期中，將會有來自傳統產業和「舊經濟」的投資機會，特別是在脫碳和基礎設施支出增加的背景下。</p>
+            <ul>
+                <li><strong>國防支出</strong>：地緣政治緊張局勢加劇將推動全球國防支出增加，為相關公司帶來機會。</li>
+                <li><strong>基礎設施支出</strong>：為支援能源轉型和重建供應鏈，全球基礎設施和資本支出將大幅增加。</li>
+                <li><strong>綠色支出</strong>：全球對脫碳的承諾將驅動大量綠色投資，為可再生能源、電動車和電池等行業創造機會。</li>
+                <li><strong>政府政策與支出</strong>：政府的產業政策和財政補貼將引導投資流向關鍵行業，例如半導體和清潔能源。</li>
+                <li><strong>商品支出</strong>：能源轉型和基礎設施投資將增加對關鍵金屬和商品的長期需求。</li>
+                <li><strong>工作未來</strong>：AI 和自動化將改變勞動力市場，但預計新興產業也將創造大量新工作。</li>
+                <li><strong>懷舊行銷的力量</strong>：在高度數位化和快速變化的世界中，消費者對「真實性」和懷舊的渴望將推動相關產品和服務的增長。</li>
+            </ul>
+        </div>
     </div>
 
     <script>
-        // 移除了前端硬編碼的 API_KEY，前端將呼叫後端 API
-        // !!! 請確保您的後端伺服器運行在 http://localhost:3000 !!!
-        // --- 更新點 1 ---
-        const API_BASE_URL = 'https://stock-ai-backend-api.onrender.com/api'; // Change this to your actual backend API URL if different
-        // --- 更新點 1 ---
+        // 後端 API 基礎 URL
+        const API_BASE_URL = 'https://stock-ai-backend-api.onrender.com/api'; 
 
-        let base64Images = []; // Array to store multiple base64 images
+        let base64Images = []; // 儲存多張 Base64 圖片的陣列
 
         // 預覽多張圖片
         function previewMultipleImages(event) {
@@ -493,9 +625,7 @@
                         <button class="remove-image-btn" data-index="${index}">&times;</button>
                     `;
                     imagePreviewContainer.appendChild(previewItem);
-                    // 確保使用 file.type 獲取準確的 MIME 類型
                     const mimeType = file.type;
-                    // 將 base64 數據和正確的 MIME 類型一起儲存
                     base64Images.push({ index: index, data: e.target.result.split(',')[1], mimeType: mimeType });
 
                     // 為移除按鈕添加事件監聽器
@@ -509,17 +639,15 @@
 
         // 移除圖片
         function removeImage(indexToRemove, previewItemElement) {
-            // 從 DOM 中移除
-            previewItemElement.remove();
+            previewItemElement.remove(); // 從 DOM 中移除
 
             // 從 base64Images 陣列中移除
             base64Images = base64Images.filter(item => item.index !== indexToRemove);
 
-            // 重新索引剩餘圖像（可選，但有助於保持一致性）
-            // 由於 filter 會導致索引不連續，這裡重新映射 index
+            // 重新索引剩餘圖像（確保索引一致性）
             base64Images = base64Images.map((item, newIndex) => ({
-                ...item, // 複製現有屬性
-                index: newIndex // 更新索引
+                ...item, 
+                index: newIndex 
             }));
 
             // 更新移除按鈕上的 data-index
@@ -528,26 +656,197 @@
             });
         }
 
+        // --- 分析市場情緒功能 ---
+        async function analyzeSentiment() {
+            const sentimentText = document.getElementById('sentimentText').value;
+            const sentimentResultsDiv = document.getElementById('sentimentResults');
+            const analyzeSentimentButton = document.getElementById('analyzeSentimentButton');
+            const sentimentButtonText = document.getElementById('sentimentButtonText');
+            const sentimentLoadingAnimation = document.getElementById('sentimentLoadingAnimation');
+
+            // 清除之前的結果
+            sentimentResultsDiv.innerHTML = ''; 
+
+            if (!sentimentText.trim()) {
+                sentimentResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">請輸入文本以進行情緒分析。</p>';
+                return;
+            }
+
+            // 顯示載入中狀態
+            sentimentButtonText.textContent = '分析中...';
+            sentimentLoadingAnimation.classList.remove('hidden');
+            analyzeSentimentButton.disabled = true;
+            sentimentResultsDiv.innerHTML = '<p class="text-gray-600 flex items-center justify-center"><div class="stock-line-animation"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2 18, 8 12, 16 16, 22 8" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg></div> 正在分析情緒，請稍候...</p>';
+
+            const prompt = `請對以下市場新聞、分析師報告或評論文本進行情緒分析和簡要摘要，並指出其中可能包含的知情交易者活動跡象（例如：巨額交易量、異常的期權活動、大宗交易等）。請以繁體中文的 Markdown 格式輸出，首先是總體情緒評估（例如：看漲、看跌、中性、複雜），然後是知情交易者活動分析（若有發現），最後是簡要摘要。每個部分請用粗體標題。
+---
+文本：
+${sentimentText}
+---`;
+
+            let payload = {
+                contents: [{
+                    role: "user",
+                    parts: [{ text: prompt }]
+                }],
+            };
+
+            try {
+                const proxyApiUrl = `${API_BASE_URL}/gemini`;
+                const response = await fetch(proxyApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                console.log('--- Debug: Raw API Response (情緒分析) ---');
+                console.log('Raw Result:', JSON.stringify(result, null, 2));
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const sentimentOutput = result.candidates[0].content.parts[0].text;
+                    sentimentResultsDiv.innerHTML = `<div class="p-4 bg-gray-50 rounded-lg">${marked.parse(sentimentOutput)}</div>`;
+                } else {
+                    let errorMessage = '情緒分析失敗：AI 回應結構不符預期或無內容。';
+                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].finishReason) {
+                        errorMessage += `結束原因: ${result.candidates[0].finishReason}.`;
+                    } else if (result.error && result.error.message) {
+                        errorMessage += `API 錯誤訊息: ${result.error.message}.`;
+                    }
+                    sentimentResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">${errorMessage}</p>`;
+                }
+            } catch (error) {
+                console.error('情緒分析請求失敗:', error);
+                sentimentResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">情緒分析請求失敗：${error.message}。請檢查網路連線或稍後再試。</p>`;
+            } finally {
+                // 恢復按鈕狀態
+                sentimentButtonText.textContent = '分析市場情緒';
+                sentimentLoadingAnimation.classList.add('hidden');
+                analyzeSentimentButton.disabled = false;
+            }
+        }
+        // --- 結束：分析市場情緒功能 ---
+
+        // --- 獲取增強分析的資料建議功能 ---
+        async function getSuggestionsForAdditionalData() {
+            const stockDescription = document.getElementById('stockDescription').value;
+            const optionDescription = document.getElementById('optionDescription').value;
+            const generalInfo = document.getElementById('generalInfo').value;
+            const sentimentText = document.getElementById('sentimentText').value; // Include sentiment text input
+            const suggestionResultsDiv = document.getElementById('suggestionResults');
+            const getSuggestionsButton = document.getElementById('getSuggestionsButton');
+            const suggestionsButtonText = document.getElementById('suggestionsButtonText');
+            const suggestionsLoadingAnimation = document.getElementById('suggestionsLoadingAnimation');
+
+            // 清除之前的結果
+            suggestionResultsDiv.innerHTML = '<p class="text-gray-600">點擊上方按鈕，AI 將根據您目前的輸入，建議可補充的資料類型。</p>'; // Reset to default
+
+
+            // 顯示載入中狀態
+            suggestionsButtonText.textContent = '獲取建議中...';
+            suggestionsLoadingAnimation.classList.remove('hidden');
+            getSuggestionsButton.disabled = true;
+            suggestionResultsDiv.innerHTML = '<p class="text-gray-600 flex items-center justify-center"><div class="stock-line-animation"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2 18, 8 12, 16 16, 22 8" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg></div> 正在生成資料建議，請稍候...</p>';
+
+
+            let currentInputSummary = '目前已提供的資訊：\n';
+            if (base64Images.length > 0) {
+                currentInputSummary += `- 已上傳 ${base64Images.length} 張圖片 (圖表或示意圖)。\n`;
+            }
+            if (stockDescription) {
+                currentInputSummary += `- 個股描述："${stockDescription.substring(0, 100)}..."\n`;
+            }
+            if (optionDescription) {
+                currentInputSummary += `- 期權描述："${optionDescription.substring(0, 100)}..."\n`;
+            }
+            if (generalInfo) {
+                currentInputSummary += `- 通用資訊："${generalInfo.substring(0, 100)}..."\n`;
+            }
+            if (sentimentText) {
+                currentInputSummary += `- 市場情緒文本："${sentimentText.substring(0, 100)}..."\n`;
+            }
+            if (currentInputSummary === '目前已提供的資訊：\n') {
+                currentInputSummary += '- 無任何輸入資料。';
+            }
+
+
+            const prompt = `根據目前使用者提供的以下輸入資料，請建議可以補充哪些額外的資料類型，以進一步增強股票與期權的綜合分析。請以繁體中文的 **Markdown 清單（條列式）形式** 列出建議，並為每項建議提供簡要理由。
+
+${currentInputSummary}
+
+**建議的補充資料類型：**`;
+
+            let payload = {
+                contents: [{
+                    role: "user",
+                    parts: [{ text: prompt }]
+                }],
+            };
+            // Do not send images for suggestions, as it's about data types not image content analysis.
+
+            try {
+                const proxyApiUrl = `${API_BASE_URL}/gemini`;
+                const response = await fetch(proxyApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                console.log('--- Debug: Raw API Response (資料建議) ---');
+                console.log('Raw Result:', JSON.stringify(result, null, 2));
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const suggestionOutput = result.candidates[0].content.parts[0].text;
+                    suggestionResultsDiv.innerHTML = `<div class="p-4 bg-gray-50 rounded-lg">${marked.parse(suggestionOutput)}</div>`;
+                } else {
+                    let errorMessage = '獲取資料建議失敗：AI 回應結構不符預期或無內容。';
+                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].finishReason) {
+                        errorMessage += `結束原因: ${result.candidates[0].finishReason}.`;
+                    } else if (result.error && result.error.message) {
+                        errorMessage += `API 錯誤訊息: ${result.error.message}.`;
+                    }
+                    suggestionResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">${errorMessage}</p>`;
+                }
+            } catch (error) {
+                console.error('資料建議請求失敗:', error);
+                suggestionResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">資料建議請求失敗：${error.message}。請檢查網路連線或稍後再試。</p>`;
+            } finally {
+                // 恢復按鈕狀態
+                suggestionsButtonText.textContent = '獲取增強分析的資料建議';
+                suggestionsLoadingAnimation.classList.add('hidden');
+                getSuggestionsButton.disabled = false;
+            }
+        }
+        // --- 結束：獲取增強分析的資料建議功能 ---
+
+
         // 主要的股票與期權綜合分析功能
         async function analyzeStockAndOptions() {
             const stockDescription = document.getElementById('stockDescription').value;
             const optionDescription = document.getElementById('optionDescription').value;
             const generalInfo = document.getElementById('generalInfo').value;
-            const keyPricePointsResultsDiv = document.getElementById('keyPricePointsResults'); // 概覽結果顯示區
+            const sentimentText = document.getElementById('sentimentText').value; // Get sentiment text here too
+            
+            const keyPricePointsResultsDiv = document.getElementById('keyPricePointsResults'); 
             const analysisDetailsResultsDiv = document.getElementById('analysisDetailsResults');
             const analyzeButton = document.getElementById('analyzeButton');
             const buttonText = document.getElementById('buttonText');
             const loadingAnimation = document.getElementById('loadingAnimation');
-            const finalClosingSectionDiv = document.getElementById('finalClosingSection'); // 祝福語顯示區
+            const finalClosingSectionDiv = document.getElementById('finalClosingSection'); 
 
             // 清除之前的結果
-            keyPricePointsResultsDiv.innerHTML = '<p class="text-gray-600">此處將顯示關鍵的進場、出場、支撐、阻力與目標價位資訊。</p>';
+            keyPricePointsResultsDiv.innerHTML = '<p class="text-gray-600">此處將顯示關鍵的進場、出場、支撐、阻力與目標價位資訊。</p>'; 
             analysisDetailsResultsDiv.innerHTML = '<p class="text-gray-600">此處將顯示技術分析、期權信息整合、市場情緒等詳細內容。</p>';
             finalClosingSectionDiv.classList.add('hidden'); // 初始隱藏祝福語區塊
 
 
-            if (base64Images.length === 0 && !stockDescription && !optionDescription && !generalInfo) {
-                keyPricePointsResultsDiv.innerHTML = ''; // 清除預設文字
+            if (base64Images.length === 0 && !stockDescription && !optionDescription && !generalInfo && !sentimentText) {
+                keyPricePointsResultsDiv.innerHTML = ''; 
                 analysisDetailsResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">請至少上傳一張圖表或輸入相關描述以進行分析。</p>';
                 return;
             }
@@ -556,24 +855,23 @@
             buttonText.textContent = '分析中...';
             loadingAnimation.classList.remove('hidden');
             analyzeButton.disabled = true;
-            keyPricePointsResultsDiv.innerHTML = ''; // 清除預設文字
+            keyPricePointsResultsDiv.innerHTML = ''; 
             analysisDetailsResultsDiv.innerHTML = '<p class="text-gray-600 flex items-center justify-center"><div class="stock-line-animation"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2 18, 8 12, 16 16, 22 8" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg></div> 正在綜合分析，請稍候...</p>';
 
             // 構建 AI Prompt
-            // 更新AI提示詞：如果表格無法正確呈現，改為要求AI輸出為條列式列表
-            let prompt = `請根據以下提供的所有資訊（包括股票線圖、期權資訊和通用描述），對該標的進行全面的技術分析與未來走勢評估。請綜合考量各種信息，特別是期權市場的潛在信息。請以繁體中文回應。
+            let prompt = `請根據以下提供的所有資訊（包括股票線圖、期權資訊、通用描述、市場情緒以及市場超級週期參考資料），對該標的進行全面的技術分析與未來走勢評估。請綜合考量各種信息，特別是期權市場的潛在信息。請特別注意上傳圖片中K線圖或任何圖表的週期（例如：分、時、日、週、月、年），並在分析中明確說明您識別出的週期。請以繁體中文回應。
 
 ---START_SUMMARY---
 **分析結果概覽：關鍵價位與潛在目標價**
-請將最重要的進場點位、出場點位（止損點）、關鍵支撐位、關鍵阻力位，以及透過技術分析評估的目標價（針對每個目標價提供明確的機率百分比或高/中/低等級）以**Markdown 清單（條列式）形式**，優先列出於此報告的最開頭部分。
-每個項目請用 "項目：價位/區間 (備註/機率)" 的格式表示。例如：
+請將最重要的進場點位、出場點位（止損點）、關鍵支撐位、關鍵阻力位，以及透過技術分析評估的目標價（針對每個目標價提供明確的機率百分比或高/中/低等級 **和可能的完成時間範圍**）以**Markdown 清單（條列式）形式**，優先列出於此報告的最開頭部分。
+每個項目請用 "項目：價位/區間 (備註/機率/目標時間)" 的格式表示。例如：
 - 建議進場點位：210-215 (回調至前期阻力位附近，若能守住則可進場)
 - 建議出場點位：195-200 (止損點) 跌破上升趨勢線
 - 主要支撐位：160-170 (前期盤整區間，強支撐)
 - 主要阻力位：240 (前期高點附近，可能存在阻力)
-- 目標價 1：230-240 (可能機率：中等 (50%)，突破前期阻力，持續上漲)
-- 目標價 2：250-260 (可能機率：較低 (30%)，需突破更多阻力)
-- 目標價 3：270+ (可能機率：極低 (10%)，市場整體看好)
+- 目標價 1：230-240 (可能機率：中等 (50%)，目標時間：3個月內，突破前期阻力，持續上漲)
+- 目標價 2：250-260 (可能機率：較低 (30%)，目標時間：6個月內，需突破更多阻力)
+- 目標價 3：270+ (可能機率：極低 (10%)，目標時間：12個月內，市場整體看好)
 ---END_SUMMARY---
 
 ---START_DETAILS---
@@ -581,10 +879,14 @@
 請在上述「分析結果概覽」之後，提供詳細的綜合評估。內容請基於您提供的PDF內容以及期權相關知識，包含但不限於以下項目。
 **非常重要：請務必在每個分析部分開始時使用 Markdown 二級標題 (##) 進行標示，例如 "## 市場情緒與知情交易者活動評估"，以確保字體較大且易於閱讀。**
 
+## 圖表週期識別
+請根據上傳圖片的內容，明確指出您識別出的圖表週期（例如：日線圖、週線圖等），並簡要說明其對分析的意義。
+
 ## 市場情緒與知情交易者活動評估
 ## 期權信息對股票走勢的潛在影響
 ## 圖表模式識別詳述
 ## 技術指標分析詳述
+## 結合超級週期概念的宏觀展望
 ## 總結與風險提示
 ---END_DETAILS---
 `;
@@ -598,10 +900,17 @@
             if (generalInfo) {
                 prompt += `\n**使用者提供的其他通用資訊：**\n${generalInfo}\n`;
             }
+            if (sentimentText) { // Include sentiment text if available
+                prompt += `\n**使用者提供的市場情緒分析文本：**\n${sentimentText}\n`;
+            }
 
             // 技術分析參考資料 (此區塊在 HTML 中已隱藏，但內容會作為 Prompt 發送給 AI)
             prompt += "\n**以下是技術分析參考資料，請務必將其作為分析依據：**\n";
             prompt += document.getElementById('technicalAnalysisContent').innerText + "\n\n";
+
+            // 新增：市場超級週期參考資料 (此區塊在 HTML 中已隱藏，但內容會作為 Prompt 發送給 AI)
+            prompt += "\n**以下是市場超級週期參考資料，請將其納入宏觀展望的考量：**\n";
+            prompt += document.getElementById('marketSuperCyclesContent').innerText + "\n\n";
 
             prompt += `\n**請務必嚴格遵循以上輸出格式，使用 ---START_SUMMARY--- 和 ---END_SUMMARY--- 標記來包圍概覽部分，並使用 ---START_DETAILS--- 和 ---END_DETAILS--- 標記來包圍詳細分析部分。**
 **在 ---END_DETAILS--- 標記之後，請不要輸出任何內容。我將在前端直接顯示祝福語。**`; // 指示AI不要輸出祝福語
@@ -700,238 +1009,17 @@
 
                     keyPricePointsResultsDiv.innerHTML = '';
                     analysisDetailsResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">${errorMessage}</p>`;
-                    finalClosingSectionDiv.classList.add('hidden');
-                    console.error("AI Response structure unexpected or error:", result);
                 }
-
             } catch (error) {
-                console.error('分析出錯:', error);
+                console.error('API 請求失敗:', error);
                 keyPricePointsResultsDiv.innerHTML = '';
-                analysisDetailsResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">分析過程中發生網路或內部錯誤: ${error.message}。請檢查網路連線或稍後再試。</p>`;
-                finalClosingSectionDiv.classList.add('hidden');
+                analysisDetailsResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">API 請求失敗：${error.message}。請檢查網路連線或後端服務是否正常運行。</p>`;
             } finally {
+                // 恢復按鈕狀態
                 buttonText.textContent = '開始綜合分析';
                 loadingAnimation.classList.add('hidden');
                 analyzeButton.disabled = false;
             }
-        }
-
-        // 新增的市場情緒分析功能
-        async function analyzeSentiment() {
-            const sentimentText = document.getElementById('sentimentText').value;
-            const sentimentResultsDiv = document.getElementById('sentimentResults');
-            const sentimentButtonText = document.getElementById('sentimentButtonText');
-            const sentimentLoadingAnimation = document.getElementById('sentimentLoadingAnimation');
-            const analyzeSentimentButton = document.getElementById('analyzeSentimentButton');
-
-            if (!sentimentText) {
-                sentimentResultsDiv.innerHTML = '<p class="text-red-600 font-semibold">請輸入您想分析情緒的文本。</p>';
-                return;
-            }
-
-            // 顯示載入中狀態
-            sentimentButtonText.textContent = '分析中...';
-            sentimentLoadingAnimation.classList.remove('hidden');
-            analyzeSentimentButton.disabled = true;
-            sentimentResultsDiv.innerHTML = '<p class="text-gray-600 flex items-center justify-center"><div class="stock-line-animation"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2 18, 8 12, 16 16, 22 8" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg></div> 正在分析市場情緒，請稍候...</p>';
-
-            const sentimentPrompt = `請分析以下文本，提取其主要觀點，判斷整體市場情緒（看漲、看跌或中立），並識別其中提及的任何潛在市場驅動因素或風險。請以繁體中文回應，並以**條列式格式**提供分析結果，內容請簡潔。
-
-文本內容：
-${sentimentText}`;
-
-            try {
-                const payload = {
-                    contents: [{
-                        role: "user",
-                        parts: [{ text: sentimentPrompt }]
-                    }],
-                };
-                const proxyApiUrl = `${API_BASE_URL}/gemini`;
-
-                const response = await fetch(proxyApiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                console.log('Sentiment API Response (市場情緒分析):', JSON.stringify(result, null, 2));
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    sentimentResultsDiv.innerHTML = `<div class="p-4 bg-gray-50 rounded-lg">${marked.parse(text)}</div>`;
-                } else {
-                    let errorMessage = '情緒分析失敗：AI 回應結構不符預期或無內容。';
-                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].finishReason) {
-                        errorMessage += `結束原因: ${result.candidates[0].finishReason}.`;
-                    } else if (result.error && result.error.message) {
-                        errorMessage += `API 錯誤訊息: ${result.error.message}.`;
-                    }
-                    errorMessage += `請確保輸入文本清晰。詳細回應請查看控制台。`;
-
-                    sentimentResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">${errorMessage}</p>`;
-                    console.error("AI Sentiment Response structure unexpected or error:", result);
-                }
-
-            } catch (error) {
-                console.error('情緒分析出錯:', error);
-                sentimentResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">情緒分析過程中發生網路或內部錯誤: ${error.message}。請檢查網路連線或稍後再試。</p>`;
-            } finally {
-                sentimentButtonText.textContent = '分析市場情緒';
-                sentimentLoadingAnimation.classList.add('hidden');
-                analyzeSentimentButton.disabled = false;
-            }
-        }
-
-        // 新增功能：獲取建議提供更多資料的類型
-        async function getSuggestionsForAdditionalData() {
-            const stockDescription = document.getElementById('stockDescription').value;
-            const optionDescription = document.getElementById('optionDescription').value;
-            const generalInfo = document.getElementById('generalInfo').value;
-            const suggestionResultsDiv = document.getElementById('suggestionResults');
-            const suggestDataButtonText = document.getElementById('suggestionsButtonText');
-            const suggestDataLoadingAnimation = document.getElementById('suggestionsLoadingAnimation');
-            const suggestDataButton = document.getElementById('getSuggestionsButton');
-
-            // 顯示載入中狀態
-            suggestDataButtonText.textContent = '獲取建議中...';
-            suggestDataLoadingAnimation.classList.remove('hidden');
-            suggestDataButton.disabled = true;
-            suggestionResultsDiv.innerHTML = '<p class="text-gray-600 flex items-center justify-center"><div class="stock-line-animation"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2 18, 8 12, 16 16, 22 8" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg></div> 正在獲取資料建議，請稍候...</p>';
-
-            let prompt = `請根據以下已提供的股票線圖、個股描述、期權資訊和通用資訊的概況，簡潔地列出 3 到 5 項您可以額外提供的關鍵資料類型，以幫助我（作為 AI）顯著提高分析準確度和深度。請以繁體中文回應，並以**條列式格式**提供，每項建議簡要說明其潛在價值。
-
-已提供的資訊概況：
-- 是否提供了股票線圖：${base64Images.length > 0 ? '是' : '否'}
-- 是否提供了個股相關描述：${stockDescription ? '是' : '否'}
-- 是否提供了期權相關資訊描述：${optionDescription ? '是' : '否'}
-- 是否提供了其他通用資訊：${generalInfo ? '是' : '否'}
-
-請僅列出最重要的 3 到 5 項建議。`;
-
-            const parts = [{ text: prompt }];
-            base64Images.forEach(img => {
-                parts.push({
-                    inlineData: {
-                        mimeType: img.mimeType,
-                        data: img.data
-                    }
-                });
-            });
-
-
-            try {
-                const payload = {
-                    contents: [{
-                        role: "user",
-                        parts: parts
-                    }],
-                };
-                const proxyApiUrl = `${API_BASE_URL}/gemini`;
-
-                const response = await fetch(proxyApiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                console.log('Suggestion API Response (資料建議):', JSON.stringify(result, null, 2));
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    suggestionResultsDiv.innerHTML = `<div class="p-4 bg-gray-50 rounded-lg">${marked.parse(text)}</div>`;
-                } else {
-                    let errorMessage = '未能獲取資料建議：AI 回應結構不符預期或無內容。';
-                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].finishReason) {
-                        errorMessage += `結束原因: ${result.candidates[0].finishReason}.`;
-                    } else if (result.error && result.error.message) {
-                        errorMessage += `API 錯誤訊息: ${result.error.message}.`;
-                    }
-                    errorMessage += `請確保輸入文本清晰。詳細回應請查看控制台。`;
-                    suggestionResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">${errorMessage}</p>`;
-                    console.error("AI Suggestion Response structure unexpected or error:", result);
-                }
-
-            } catch (error) {
-                console.error('獲取資料建議出錯:', error);
-                suggestionResultsDiv.innerHTML = `<p class="text-red-600 font-semibold">獲取資料建議過程中發生網路或內部錯誤: ${error.message}。請檢查網路連線或稍後再試。</p>`;
-            } finally {
-                suggestDataButtonText.textContent = '詢問可增加的資料類型';
-                suggestDataLoadingAnimation.classList.add('hidden');
-                suggestDataButton.disabled = false;
-            }
-        }
-
-
-        // Markdown 渲染器 (簡易版，處理常見的 Markdown 格式)
-        const marked = {
-            parse: function(markdown) {
-                let html = markdown;
-
-                // Process block elements first to avoid interference
-                // 1. Process Tables - Using a more specific regex for the header separator line
-                const tableRegex = /^\|(.+?)\|\r?\n\|(---(?:\|---)*)\|\r?\n((?:\|.*?\|[\r\n]*)*)/gm;
-                html = html.replace(tableRegex, (match, headerRow, separatorLine, body) => {
-                    const headers = headerRow.split('|').filter(h => h.trim() !== '').map(h => `<th>${h.trim()}</th>`).join('');
-                    const rows = body.split('\n').filter(r => r.trim() !== '').map(row => {
-                        const cells = row.split('|').map(c => c.trim()).filter((c, i, arr) => {
-                            // Keep empty if it's an actual cell between pipes, not just from leading/trailing pipes
-                            return (c !== '' || (i > 0 && i < arr.length - 1));
-                        }).map(c => `<td>${c}</td>`).join('');
-                        return `<tr>${cells}</tr>`;
-                    }).join('');
-                    return `<table><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
-                });
-
-                // 2. Process Headings
-                html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-                html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-                html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-
-                // 3. Process Lists
-                html = html.replace(/^\s*[\*-] (.*$)/gim, '<li>$1</li>');
-                const listPattern = /(<li>.*?<\/li>(\s*<li>.*?<\/li>)*)/gs;
-                html = html.replace(listPattern, '<ul>$1</ul>');
-
-                // 4. Process Inline elements (bold)
-                html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
-
-                // 5. Process Paragraphs and remaining newlines
-                // Split by double newlines for paragraphs, but protect already processed block elements
-                html = html.split('\n\n').map(block => {
-                    // Check if block already contains a block-level HTML tag (heading, list, table)
-                    if (block.trim().match(/<h[1-3]>|<ul|<\/ul>|<ol|<\/ol>|<li|<table|<\/table>/i)) {
-                        return block.trim(); // Don't wrap if it's already a block tag
-                    }
-                    // For remaining text, replace single newlines with <br> and wrap in <p>
-                    return `<p>${block.trim().replace(/\r?\n/g, '<br>')}</p>`;
-                }).join('');
-
-                // Remove empty <p> tags
-                html = html.replace(/<p>\s*<br>\s*<\/p>/g, ''); // Handles <p><br></p>
-                html = html.replace(/<p>\s*<\/p>/g, ''); // Handles empty <p></p>
-                // Final cleanup for orphaned <br> tags at the end of blocks that should be paragraphs
-                html = html.replace(/<br>\s*$/, '');
-
-
-                return html;
-            }
-        };
-
-        // 輔助函數：將檔案轉換為 Base64 格式
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
-            });
         }
     </script>
 </body>
